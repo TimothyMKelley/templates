@@ -8,22 +8,23 @@ services:
   booksonic:
     image: linuxserver/booksonic
     environment:
-      - JAVA_OPTS=-Dserver.use-forward-headers=true
+      - JAVA_OPTS=-Dserver.use-forward-headers=true      
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - CONTEXT_PATH=url-base
     volumes:
-      - /media/Audio/Audiobooks/Fiction:/books
-      - /media/Audio/Audiobooks:/media
-      - /media/Audio/podcasts:/podcasts
-      - /media/Audio/playlists:/playlists
-      - /home/tim/booksonic:/config
-      - /etc/timezone:/etc/timezone:ro
-      - /home/tim/shared:/shared
+      - audiobooks:/audiobooks
+      - podcasts:/podcasts
+      - othermedia:/othermedia
+      - config:/config
     networks:
       - traefik-net
     deploy:
       placement:
         constraints: [node.hostname == docker]
       labels:
-        - traefik.frontend.rule=Host:booksonic.mullinskelley.com
+        - traefik.frontend.rule=Host:booksonic.${DOMAIN}
         - traefik.enable=true
         - traefik.port=4040
         - traefik.tags=traefik-net
@@ -33,7 +34,7 @@ services:
         - traefik.frontend.headers.browserXSSFilter=true
         - traefik.frontend.headers.contentTypeNosniff=true
         - traefik.frontend.headers.forceSTSHeader=true
-        - traefik.frontend.headers.SSLHost=booksonic.mullinskelley.com
+        - traefik.frontend.headers.SSLHost=booksonic.${DOMAIN}
         - traefik.frontend.headers.SSLForceHost=true
         - traefik.frontend.headers.STSIncludeSubdomains=true
         - traefik.frontend.headers.STSPreload=true
@@ -43,3 +44,10 @@ services:
         - traefik.redirectorservice.frontend.redirect.entryPoint=https
         # Traefik service that listens to HTTPS
         - traefik.webservice.frontend.entryPoints=https
+
+volumes:
+    audiobooks:
+    podcasts:
+    othermedia:
+    config:
+    
