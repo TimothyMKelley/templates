@@ -42,7 +42,7 @@ services:
         - traefik.webservice.frontend.entryPoints=https
 
 volumes:
-    audiobooks:
-    podcasts:
-    othermedia:
+    mosquitto.conf:
     config:
+    data:
+    log:
